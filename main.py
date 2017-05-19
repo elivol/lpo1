@@ -77,10 +77,29 @@ for i in range(s_contours_count):
 print(sum_len_t, sum_len_s)
 
 # 4. Положение экстремумов подписи
+# Поиск  экстремумов по оси Y:
+# a) для шаблона
+contours_t = contours_t[1:]
+y_extremes = []
+for i in range(t_contours_count-1):
+    cnt = contours_t[i]
+    topmost = tuple(cnt[cnt[:,:,1].argmin()][0])[1]
+    y_extremes.append(topmost)
 
+print(max(y_extremes))
+
+# b) для источника
+y_extremes.clear()
+contours_s = contours_s[1:]
+for i in range(s_contours_count-1):
+    cnt = contours_s[i]
+    topmost = tuple(cnt[cnt[:,:,1].argmin()][0])[1]
+    y_extremes.append(topmost)
+
+print(max(y_extremes))
 
 cv2.drawContours(img_s, contours_s, -1, (0, 255, 0), 3)
-cv2.drawContours(img_t, contours_t, -1, (0, 255, 0), 3)
+cv2.drawContours(img_t, contours_t, 100, (0, 255, 0), 3)
 
 cv2.imshow("t", img_t)
 cv2.waitKey()
