@@ -5,8 +5,8 @@ from math import pi, cos, sin
 # Аргументы командной строки
 
 #  ----
-sys.argv.append("1.2.png")
-sys.argv.append("2.2.png")
+sys.argv.append("1.1.png")
+sys.argv.append("2.1.png")
 #  ----
 
 # Инициализация переменных
@@ -63,52 +63,21 @@ angle_mid_t = sum_angle_t/t_contours_count
 
 print(angle_mid_s, angle_mid_t)
 
-# 3. Тип подписи (кружевная/линейная)
-# Поиск окружностей
-circles_t = cv2.HoughCircles(thresh_t, cv2.HOUGH_GRADIENT, 30, 10)
-for i in range(len(circles_t)):
-    for j in range(len(circles_t[i])):
-        cv2.circle(img_t, (circles_t[i, j, 0], circles_t[i, j, 1]), circles_t[i, j, 2], (0, 255, 0))
+# 3. Длина контуров
+sum_len_t = 0
+sum_len_s = 0
+# Общая длина подписи-шаблона
+for i in range(t_contours_count):
+    sum_len_t += cv2.arcLength(contours_t[i], True)
 
-circles_s = cv2.HoughCircles(thresh_s, cv2.HOUGH_GRADIENT, 30, 10)
-for i in range(len(circles_s)):
-    for j in range(len(circles_s[i])):
-        cv2.circle(img_s, (circles_s[i, j, 0], circles_s[i, j, 1]), circles_s[i, j, 2], (0, 255, 0))
+# Общая длина проверяемой подписи
+for i in range(s_contours_count):
+    sum_len_s += cv2.arcLength(contours_s[i], True)
 
-print(len(circles_t[0]), ' ', len(circles_s[0]))
+print(sum_len_t, sum_len_s)
 
-# Поиск линий
-edges = cv2.Canny(imgray_t,50,150,apertureSize = 3)
+# 4. Положение экстремумов подписи
 
-lines_t = cv2.HoughLines(thresh_t, 20, pi/180, 100)
-
-for i in range(len(lines_t)):
-    rho = lines_t[i, 0, 0]
-    theta = lines_t[i, 0, 1]
-    a = cos(theta)
-    b = sin(theta)
-    x0 = a * rho
-    y0 = b * rho
-    x1 = int(x0 + 1000 * (-b))
-    y1 = int(y0 + 1000 * (a))
-    x2 = int(x0 - 1000 * (-b))
-    y2 = int(y0 - 1000 * (a))
-    cv2.line(img_t, (x1, y1), (x2, y2), (0, 0, 255), 1)
-
-minLineLength = 100
-maxLineGap = 10
-cv2.imshow("", edges)
-cv2.waitKey()
-"""lines_t = cv2.HoughLines(edges,1,pi/180,500,minLineLength,maxLineGap)
-for i in range(len(lines_t)):
-    x1 = lines_t[i, 0, 0]
-    y1 = lines_t[i, 0, 1]
-    x2 = lines_t[i, 0, 2]
-    y2 = lines_t[i, 0, 3]
-    cv2.line(img_t,(x1,y1),(x2,y2),(0,0,255),2)"""
-
-
-print(lines_t)
 
 cv2.drawContours(img_s, contours_s, -1, (0, 255, 0), 3)
 cv2.drawContours(img_t, contours_t, -1, (0, 255, 0), 3)
